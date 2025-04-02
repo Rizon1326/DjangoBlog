@@ -1,11 +1,13 @@
 # blog/urls.py
 from django.urls import path
-from .views import Register, Login, BlogList, BlogDetail, BlogCreate, BlogEdit
+from .views import Register,VerifyOTP, Login, BlogList, BlogDetail, BlogCreate, BlogEdit
 
 urlpatterns = [
     
-    path('register/', Register.as_view()),    
-    path('login/', Login.as_view()),             
+    path('register/', Register.as_view()),  
+     path('verify/', VerifyOTP.as_view()),  
+    path('login/', Login.as_view()),  
+
     
     # Blog URLs
     path('', BlogList.as_view()),            

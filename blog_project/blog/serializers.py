@@ -6,7 +6,14 @@ from django.contrib.auth import get_user_model
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
-        fields = ['id', 'username', 'email', 'first_name', 'last_name']
+        fields = ['id', 'username', 'email']
+class VerifyAccountSerializer(serializers.Serializer):
+    email=serializers.EmailField()
+    otp=serializers.CharField()
+     
+class LoginSerializer(serializers.Serializer):
+    email=serializers.EmailField()
+    password=serializers.CharField()
 
 class BlogSerializer(serializers.ModelSerializer):
     author = UserSerializer(read_only=True)
