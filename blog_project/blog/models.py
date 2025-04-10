@@ -17,9 +17,21 @@ class CustomUser(AbstractUser):
     objects = UserManager()
 
 class Blog(models.Model):
+    DRAFT = 'draft'
+    POST = 'post'
+    STATUS_CHOICES = [
+        (DRAFT, 'Draft'),
+        (POST, 'Post'),
+    ]
+    
     title = models.CharField(max_length=200)
     content = models.TextField()
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    status = models.CharField(
+        max_length=5, 
+        choices=STATUS_CHOICES, 
+        default=DRAFT  # Default to 'draft' if no status is provided
+    )
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 

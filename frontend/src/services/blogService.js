@@ -72,6 +72,20 @@ export const deleteBlog = async (id) => {
   }
 };
 
+export const updateBlogStatus = async (id, status) => {
+  try {
+    const token = getAuthToken();  
+    const response = await api.put(`/${id}/edit/`, { status }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;  
+  } catch (error) {
+    throw error.response.data;  
+  }
+};
+
 
 
 

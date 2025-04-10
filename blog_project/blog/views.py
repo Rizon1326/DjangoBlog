@@ -125,13 +125,23 @@ class BlogCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
+        # Ensure the status field is included in the request data
+        status_value = request.data.get('status', 'draft')  # Default to 'draft' if not provided
+
+        # Add the status value to the data being passed to the serializer
+        request.data['status'] = status_value
+
+        # Automatically assign the current user as the author
+        request.data['author'] = request.user.id  # Automatically set the author to the authenticated user
+
+        # Serialize the data
         serializer = BlogSerializer(data=request.data)
+        
         if serializer.is_valid():
-            serializer.save(author=request.user)  
+            serializer.save()  # No need to manually set author here since it's already added to request.data
             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 # Blog Edit 
 class BlogEdit(APIView):
@@ -147,6 +157,27 @@ class BlogEdit(APIView):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Specific User Draft Blog
+class SpecificUserDraftBlog(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        blogs = Blog.objects.filter(author=user, status='draft')  # Filter blogs by the logged-in user and status 'draft'
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+# Specific User Published Blog
+class SpecificUserPublishedBlog(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        blogs = Blog.objects.filter(author=user, status='post')  # Filter blogs by the logged-in user and status 'post'
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+# 
+
 
 # Blog Delete
 class BlogDelete(APIView):

@@ -1,6 +1,6 @@
 # blog/urls.py
 from django.urls import path
-from .views import Register,VerifyOTP, Login,UserDetails, BlogList,SpecificUserBlog, BlogCreate, BlogEdit,BlogDelete, CommentCreate, CommentEdit, CommentDelete, CommentView, CommentReply
+from .views import Register,VerifyOTP, Login,UserDetails, BlogList,SpecificUserBlog,SpecificUserDraftBlog,SpecificUserPublishedBlog, BlogCreate, BlogEdit,BlogDelete, CommentCreate, CommentEdit, CommentDelete, CommentView, CommentReply
 
 urlpatterns = [
     
@@ -21,6 +21,9 @@ urlpatterns = [
     path('<int:pk>/delete/', BlogDelete.as_view()),
     
      path('user/blogs/', SpecificUserBlog.as_view()),
+      path('user/blogs/draft/', SpecificUserDraftBlog.as_view()),  # For draft blogs
+    path('user/blogs/post/', SpecificUserPublishedBlog.as_view()),  # For published blogs
+
     
     # Comment URLs
     path('<int:pk>/comments/make/', CommentCreate.as_view()),

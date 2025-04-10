@@ -1,80 +1,99 @@
-// import React, { useState } from 'react';
-// import { useNavigate } from 'react-router-dom'; // To navigate after creating a blog
-// import { createBlog } from '../../services/blogService'; // Import the createBlog function
+import React, { useState, useEffect } from 'react';
+import { createBlog } from '../../services/blogService'; 
+import { getUserDetails } from '../../services/authService'; 
+import { useNavigate } from 'react-router-dom';
 
-// const CreateBlog = () => {
-//   const [title, setTitle] = useState('');
-//   const [content, setContent] = useState('');
-//   const [error, setError] = useState('');
-//   const [loading, setLoading] = useState(false);
-//   const navigate = useNavigate();
+const CreateBlog = () => {
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [status, setStatus] = useState('draft');
+  const [error, setError] = useState('');
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
-//   // Handle form submit
-//   const handleSubmit = async (e) => {
-//     e.preventDefault();
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userDetails = await getUserDetails();
+        setUser(userDetails);
+      // eslint-disable-next-line no-unused-vars
+      } catch (err) {
+        setError('Error fetching user details');
+      }
+    };
 
-//     if (!title || !content) {
-//       setError('Both title and content are required!');
-//       return;
-//     }
+    fetchUser();
+  }, []);
 
-//     setLoading(true);
-//     try {
-//       const newBlog = {
-//         title,
-//         content,
-//       };
-//       const response = await createBlog(newBlog);
-//       setLoading(false);
-//       console.log('Blog created successfully:', response);
-//       navigate('/allblogs');
-//     } catch (err) {
-//       setLoading(false);
-//       setError(err.message || 'Error creating blog');
-//     }
-//   };
+  const handleSubmit = async (e, status) => {
+    e.preventDefault();
 
-//   return (
-//     <div className="container mx-auto p-4">
-//       <div className="bg-white p-6 rounded-md shadow-md">
-//         <h1 className="text-2xl mb-4">Create a New Blog</h1>
+    try {
+      const blogData = {
+        title,
+        content,
+        status,
+        author: user.id, // Use logged-in user id
+      };
+      await createBlog(blogData);
+      if (status === 'draft') {
+        navigate('/draft'); // Navigate to drafts if the blog is in draft state
+      } else {
+        navigate('/my-blogs'); // Navigate to posted blogs if the blog is posted
+      }
+    // eslint-disable-next-line no-unused-vars
+    } catch (err) {
+      setError('Error creating blog');
+    }
+  };
 
-//         {error && <div className="text-red-500 mb-4">{error}</div>}
+  return (
+    <div className="min-h-screen bg-gray-100 p-6">
+      <div className="max-w-2xl mx-auto bg-white p-8 rounded-md shadow-md">
+        <h2 className="text-3xl font-semibold text-center text-blue-600 mb-6">Create New Blog</h2>
+        {error && <div className="text-red-500 mb-4 text-center">{error}</div>}
+        <form onSubmit={(e) => handleSubmit(e, status)}>
+          <div className="mb-4">
+            <label className="block text-gray-700">Title</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              placeholder="Enter blog title"
+              required
+            />
+          </div>
+          <div className="mb-4">
+            <label className="block text-gray-700">Content</label>
+            <textarea
+              value={content}
+              onChange={(e) => setContent(e.target.value)}
+              className="w-full p-3 border border-gray-300 rounded-md"
+              placeholder="Write your blog content here..."
+              required
+            ></textarea>
+          </div>
+          <div className="flex justify-between items-center">
+            <button
+              type="submit"
+              className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+              onClick={() => setStatus('draft')}
+            >
+              Make as Draft
+            </button>
+            <button
+              type="submit"
+              className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
+              onClick={() => setStatus('post')}
+            >
+              Post
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};
 
-//         <form onSubmit={handleSubmit}>
-//           <div className="mb-4">
-//             <label className="block text-sm font-medium text-gray-700">Title</label>
-//             <input
-//               type="text"
-//               value={title}
-//               onChange={(e) => setTitle(e.target.value)}
-//               className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-//               placeholder="Enter blog title"
-//             />
-//           </div>
-
-//           <div className="mb-4">
-//             <label className="block text-sm font-medium text-gray-700">Content</label>
-//             <textarea
-//               value={content}
-//               onChange={(e) => setContent(e.target.value)}
-//               className="mt-1 p-2 w-full border border-gray-300 rounded-md"
-//               rows="4"
-//               placeholder="Enter blog content"
-//             />
-//           </div>
-
-//           <button
-//             type="submit"
-//             className="w-full bg-blue-500 text-white p-3 rounded hover:bg-blue-600"
-//             disabled={loading}
-//           >
-//             {loading ? 'Creating Blog...' : 'Create Blog'}
-//           </button>
-//         </form>
-//       </div>
-//     </div>
-//   );
-// };
-
-// export default CreateBlog;
+export default CreateBlog;

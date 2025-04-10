@@ -8,7 +8,8 @@ import VerifyOTP from './components/Auth/VerifyOTP';
 import ViewAllBlog from './components/Blog/ViewAllBlog';
 import Dashboard from './components/Blog/Dashboard';
 import MyBlogs from './components/Blog/MyBlogs';
-// import CreateBlog from './components/Blog/CreateBlog';
+import CreateBlog from './components/Blog/CreateBlog';
+import Draft from './components/Blog/Draft';
 
 function App() {
   return (
@@ -23,8 +24,8 @@ function App() {
           <Route path="/allblog" element={<ViewAllBlog />} />
           <Route path="/dashboard" element={<Dashboard />} />
           <Route path="/my-blogs" element={<MyBlogs />} />
-          {/* <Route path="/create-blog" element={<MyBlogs />} /> */}
-          
+          <Route path="/create-blog" element={<CreateBlog />} />
+          <Route path="/draft" element={<Draft />} />          
           
         </Routes>
       </div>

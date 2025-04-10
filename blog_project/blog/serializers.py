@@ -28,12 +28,12 @@ class LoginSerializer(serializers.Serializer):
 #         fields = ['email', 'password']
 
 class BlogSerializer(serializers.ModelSerializer):
-    author = UserSerializer(read_only=True)
-
     class Meta:
         model = Blog
-        fields = ['id', 'title', 'content', 'author', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'content', 'author', 'status', 'created_at','updated_at']  # Ensure 'status' is included here
 
+    def create(self, validated_data):
+        return Blog.objects.create(**validated_data)
 class CommentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Comment
