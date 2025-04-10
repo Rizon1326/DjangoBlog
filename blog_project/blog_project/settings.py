@@ -153,5 +153,5 @@ EMAIL_HOST_PASSWORD = '25c6010e4ad6f4'
 
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
+    "http://localhost:5173",
 ]

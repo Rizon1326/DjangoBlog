@@ -80,6 +80,18 @@ class Login(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+# UserDetails
+class UserDetails(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request, pk=None):
+        if pk:
+            user = get_object_or_404(User, pk=pk)
+        else:
+            user = request.user
+        serializer = UserSerializer(user)
+        return Response(serializer.data)
+
 # Blog List 
 class BlogList(APIView):
     permission_classes = [AllowAny]
@@ -89,11 +101,24 @@ class BlogList(APIView):
         return Response(serializer.data)
 
 
-class BlogDetail(APIView):
-    def get(self,request, pk):
-        blog = get_object_or_404(Blog, pk=pk)
-        serializer = BlogSerializer(blog)
-        return Response(serializer.data)
+# class BlogDetail(APIView):
+#     def get(self,request, pk):
+#         blog = get_object_or_404(Blog, pk=pk)
+#         serializer = BlogSerializer(blog)
+#         return Response(serializer.data)
+
+# Specific User Blog
+class SpecificUserBlog(APIView):
+    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
+
+    def get(self, request):
+        # Fetch blogs created by the logged-in user
+        user = request.user
+        blogs = Blog.objects.filter(author=user)  # Filter blogs by the logged-in user
+        
+        # Serialize the blog data
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Blog Create 
 class BlogCreate(APIView):
@@ -105,6 +130,8 @@ class BlogCreate(APIView):
             serializer.save(author=request.user)  
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
 
 # Blog Edit 
 class BlogEdit(APIView):

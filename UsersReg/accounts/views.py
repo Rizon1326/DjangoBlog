@@ -8,21 +8,14 @@ from .emails import *
 from .models import User    
 from django.contrib.auth import authenticate
 from rest_framework_simplejwt.tokens import RefreshToken
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework.decorators import permission_classes
-# from rest_framework_simplejwt.authentication import JWTAuthentication
-# from rest_framework.authentication import SessionAuthentication, BasicAuthentication
-# from rest_framework.permissions import IsAuthenticated
-# from rest_framework.decorators import authentication_classes
-# from rest_framework.decorators import permission_classes
-# from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 
 # Create your views here.
 
 
-class RegisterAPI(APIView):
+class RegisterUser(APIView):
     def post(self, request):
         try:
             data = request.data
@@ -62,7 +55,7 @@ class VerifyOTP(APIView):
         except Exception as e:
             return Response({'status': False, 'message': str(e)})
         
-class LoginAPI(APIView):
+class LoginUser(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
         if serializer.is_valid():
@@ -84,3 +77,43 @@ class LoginAPI(APIView):
             return Response({"access_token": access_token,"message":msg}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class PostBlog(APIView):
+    permission_classes = [IsAuthenticated]  
+
+    def post(self, request):
+        # Get the data from the request
+        data = request.data
+
+        # Set the current logged-in user as the author of the blog
+        data['author'] = request.user.id  # Set the user (logged-in user) as the author
+
+        # Create the blog post using the serializer
+        serializer = BlogSerializer(data=data)
+
+        if serializer.is_valid():
+            serializer.save()  # Save the blog post
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# all user blog gula ke dekhte parbe
+# @api_view(['GET'])
+class ViewAllBlogs(APIView):
+    def get(self, request):
+        blogs = Blog.objects.all()
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data)
+    
+# ekta user er blog gula ke dekhte parbe
+
+class ViewSpecificBlog(APIView):
+    def get(self, request, pk):
+        try:
+            blog = Blog.objects.get(id=pk)
+            serializer = BlogSerializer(blog)
+            return Response(serializer.data)
+        except Blog.DoesNotExist:
+            return Response({'error': 'Blog not found'}, status=status.HTTP_404_NOT_FOUND)
+
+   

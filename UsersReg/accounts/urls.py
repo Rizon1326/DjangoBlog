@@ -3,8 +3,11 @@ from django.urls import path
 from accounts.views import *
 
 urlpatterns = [
-    path('login/', LoginAPI.as_view(), name='login'),
-    path('register/', RegisterAPI.as_view(), name='register'),
+    path('register/', RegisterUser.as_view(), name='register'),
     path('verify/', VerifyOTP.as_view(), name='verify'),
+    path('login/', LoginUser.as_view(), name='login'),
+    path('postblog/', PostBlog.as_view(), name='postblog'),
+    path('viewblog/', ViewAllBlogs.as_view(), name='viewblog'),
+    path('viewblog/<int:pk>/', ViewSpecificBlog.as_view(), name='viewblog'),
    
 ]

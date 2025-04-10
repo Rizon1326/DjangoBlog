@@ -19,6 +19,7 @@ from django.contrib import admin
 from django.urls import path, include
 
 urlpatterns = [
+    # path('token-auth/', include('rest_framework_simplejwt.urls')),
     path('admin/', admin.site.urls),
     path('accounts/', include('blog.urls')),  
     path('blog/', include('blog.urls')), 
