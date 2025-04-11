@@ -70,7 +70,7 @@ docker-compose up --build
 ```
 
 - Django: [http://localhost:8000](http://localhost:8000)
-- React: [http://localhost:3000](http://localhost:3000)
+- React: [http://localhost:3000](http://localhost:5173)
 
 ### 4️⃣ Create Superuser (Optional)
 
@@ -88,7 +88,6 @@ docker exec -it blogsphere-backend-1 python manage.py createsuperuser
 cd blog_project
 python -m venv venv
 source venv/bin/activate
-pip install -r requirements.txt
 python manage.py runserver
 ```
 
