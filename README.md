@@ -1,12 +1,11 @@
 
----
-
-```markdown
 # BlogSphere ✎ᝰ.
 
-**BlogSphere✎ᝰ.** is a full-stack blogging web application built using Django (backend) and React (frontend). It features user authentication, blog creation, editing, commenting, and more — all wrapped in a clean, modern UI.
+```markdown
 
----
+
+**BlogSphere✎ᝰ.** is a full-stack blogging web application built using Django (backend) and React (frontend). It features user authentication, blog creation, editing, commenting, and more — all wrapped in a clean, modern UI.
+```
 
 ## 🚀 Features
 
