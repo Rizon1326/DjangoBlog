@@ -9,6 +9,11 @@ from .emails import send_otp_via_email
 from django.contrib.auth import get_user_model, authenticate
 from rest_framework_simplejwt.tokens import RefreshToken # type: ignore
 from django.shortcuts import get_object_or_404
+from .tasks import create_blog_notification
+from .tasks import create_comment_notification
+
+
+from .tasks import create_blog_notification
 
 User = get_user_model()
 
@@ -100,13 +105,6 @@ class BlogList(APIView):
         serializer = BlogSerializer(blogs, many=True)
         return Response(serializer.data)
 
-
-# class BlogDetail(APIView):
-#     def get(self,request, pk):
-#         blog = get_object_or_404(Blog, pk=pk)
-#         serializer = BlogSerializer(blog)
-#         return Response(serializer.data)
-
 # Specific User Blog
 class SpecificUserBlog(APIView):
     permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
@@ -121,28 +119,88 @@ class SpecificUserBlog(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 # Blog Create 
+# class BlogCreate(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request):
+        
+#         status_value = request.data.get('status', 'draft')  
+
+#         request.data['status'] = status_value
+
+#         request.data['author'] = request.user.id  
+
+       
+#         serializer = BlogSerializer(data=request.data)
+        
+#         if serializer.is_valid():
+#             serializer.save()  
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+        
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 class BlogCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        # Ensure the status field is included in the request data
-        status_value = request.data.get('status', 'draft')  # Default to 'draft' if not provided
-
-        # Add the status value to the data being passed to the serializer
+        status_value = request.data.get('status', 'draft')  
         request.data['status'] = status_value
-
-        # Automatically assign the current user as the author
-        request.data['author'] = request.user.id  # Automatically set the author to the authenticated user
-
-        # Serialize the data
+        request.data['author'] = request.user.id  
+        
         serializer = BlogSerializer(data=request.data)
         
         if serializer.is_valid():
-            serializer.save()  # No need to manually set author here since it's already added to request.data
+            blog = serializer.save()
+            
+            # Trigger notification task if blog is published
+            if blog.status == 'post':
+                create_blog_notification.delay(blog.id)
+                
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# blog/views.py
+from .tasks import create_comment_notification
 
+class CommentCreate(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, pk):
+        blog = get_object_or_404(Blog, pk=pk)
+        data = request.data
+        data['author'] = request.user.id
+        data['blog'] = blog.id
+        data['parent_comment'] = None
+
+        serializer = CommentSerializer(data=data)
+        if serializer.is_valid():
+            comment = serializer.save(author=request.user)
+            
+            # Trigger notification task
+            create_comment_notification.delay(comment.id)
+            
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# Specific User Draft Blog
+class SpecificUserDraftBlog(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        blogs = Blog.objects.filter(author=user, status='draft')  
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+# Specific User Published Blog
+class SpecificUserPublishedBlog(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        user = request.user
+        blogs = Blog.objects.filter(author=user, status='post')  
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+ 
 # Blog Edit 
 class BlogEdit(APIView):
     permission_classes = [IsAuthenticated]
@@ -158,26 +216,6 @@ class BlogEdit(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# Specific User Draft Blog
-class SpecificUserDraftBlog(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        blogs = Blog.objects.filter(author=user, status='draft')  # Filter blogs by the logged-in user and status 'draft'
-        serializer = BlogSerializer(blogs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-# Specific User Published Blog
-class SpecificUserPublishedBlog(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def get(self, request):
-        user = request.user
-        blogs = Blog.objects.filter(author=user, status='post')  # Filter blogs by the logged-in user and status 'post'
-        serializer = BlogSerializer(blogs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-# 
-
 
 # Blog Delete
 class BlogDelete(APIView):
@@ -191,6 +229,26 @@ class BlogDelete(APIView):
     
     
 
+# class CommentCreate(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, pk):
+#         blog = get_object_or_404(Blog, pk=pk)
+#         data = request.data
+#         data['author'] = request.user.id
+#         data['blog'] = blog.id
+        
+#         data['parent_comment'] = None
+
+#         serializer = CommentSerializer(data=data)
+#         if serializer.is_valid():
+#             serializer.save(author=request.user)  # Save the comment with the author and blog
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    # blog/views.py
+from .tasks import create_comment_notification
+
 class CommentCreate(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -199,37 +257,17 @@ class CommentCreate(APIView):
         data = request.data
         data['author'] = request.user.id
         data['blog'] = blog.id
+        data['parent_comment'] = None
 
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            comment = serializer.save(author=request.user)
+            
+            # Trigger notification task
+            create_comment_notification.delay(comment.id)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-class CommentEdit(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def put(self, request, pk,comment_pk):
-        blog=get_object_or_404(Blog,pk=pk)
-        comment = get_object_or_404(Comment, pk=comment_pk)
-        if comment.author != request.user:
-            return Response({'detail': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
-
-        serializer = CommentSerializer(comment, data=request.data, partial=True)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-class CommentDelete(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def delete(self, request, pk, comment_pk):
-        comment = get_object_or_404(Comment, pk=comment_pk)
-        if comment.author != request.user:
-            return Response({'detail': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
-
-        comment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
 class CommentView(APIView):
     def get(self, request, pk):
         comments = Comment.objects.filter(blog=pk)
@@ -249,6 +287,31 @@ class CommentReply(APIView):
 
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
-            serializer.save()
+            serializer.save(author=request.user)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+# blog/views.py
+class NotificationList(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def get(self, request):
+        notifications = Notification.objects.filter(user=request.user).order_by('-created_at')
+        serializer = NotificationSerializer(notifications, many=True)
+        return Response(serializer.data)
+
+class NotificationMarkAsRead(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request, pk):
+        notification = get_object_or_404(Notification, pk=pk, user=request.user)
+        notification.is_read = True
+        notification.save()
+        return Response({"status": "Notification marked as read"})
+
+class NotificationMarkAllAsRead(APIView):
+    permission_classes = [IsAuthenticated]
+    
+    def post(self, request):
+        Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
+        return Response({"status": "All notifications marked as read"})

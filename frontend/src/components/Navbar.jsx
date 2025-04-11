@@ -3,12 +3,15 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import rizon from "../assets/rizon.jpeg";
 import { getUserDetails } from "../services/authService";
+import { removeAuthToken } from "../services/authService"; // Import the removeAuthToken function
 
 const Navbar = () => {
   const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [error, setError] = useState("");
+  const navigate = useNavigate();
+
   useEffect(() => {
     const fetchUserDetails = async () => {
       try {
@@ -22,24 +25,19 @@ const Navbar = () => {
 
     fetchUserDetails();
   }, []);
-  const navigate = useNavigate(); 
 
-  
   const handleSignOut = () => {
-    navigate("/"); 
+    removeAuthToken(); // Remove token from localStorage
+    navigate("/"); // Redirect to homepage or login page
   };
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
   };
+
   return (
     <nav className="bg-white border-gray-200 dark:bg-gray-900">
       <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
-        {/* <img
-          src="https://flowbite.com/docs/images/logo.svg"
-          className="h-8"
-          alt="Flowbite Logo"
-        /> */}
         <span className="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">
           BlogSphere ✎ᝰ.
         </span>
@@ -64,7 +62,7 @@ const Navbar = () => {
               isDropdownOpen ? "block" : "hidden"
             }`}
             id="user-dropdown"
-            style={{ top: "100%" }} 
+            style={{ top: "100%" }}
           >
             <div className="px-4 py-3">
               <span className="block text-sm text-gray-900 dark:text-white">
@@ -78,16 +76,23 @@ const Navbar = () => {
               <li>
                 <a
                   href="#"
-                  onClick={handleSignOut} 
+                  onClick={handleSignOut}
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
                 >
                   Sign out
                 </a>
               </li>
+              <li>
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                >
+                  Profile
+                </button>
+              </li>
             </ul>
           </div>
         </div>
-
         <div
           className="items-center justify-between hidden w-full md:flex md:w-auto md:order-1"
           id="navbar-user"
@@ -95,7 +100,7 @@ const Navbar = () => {
           <ul className="flex flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-white dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700">
             <li>
               <a
-                href="#"
+                href="/"
                 className="block py-2 px-3 text-white bg-blue-700 rounded-sm md:bg-transparent md:text-blue-700 md:p-0 md:dark:text-blue-500"
                 aria-current="page"
               >
@@ -104,31 +109,16 @@ const Navbar = () => {
             </li>
             <li>
               <a
-                href="#"
+                href="/about"
                 className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
               >
                 About
               </a>
             </li>
-            {/* <li>
-              <a
-                href="#"
-                className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Services
-              </a>
-            </li> */}
-            {/* <li>
-              <a
-                href="#"
-                className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
-              >
-                Pricing
-              </a>
-            </li> */}
+            
             <li>
               <a
-                href="#"
+                href="/contact"
                 className="block py-2 px-3 text-gray-900 rounded-sm hover:bg-gray-100 md:hover:bg-transparent md:hover:text-blue-700 md:p-0 dark:text-white md:dark:hover:text-blue-500 dark:hover:bg-gray-700 dark:hover:text-white md:dark:hover:bg-transparent dark:border-gray-700"
               >
                 Contact

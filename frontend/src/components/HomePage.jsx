@@ -21,7 +21,7 @@ const HomePage = () => {
     }, 2000);
     
     return () => clearInterval(emojiInterval);
-  }, []);
+  }, [blogEmojis.length]);
 
   const navigateToLogin = () => {
     navigate('/login');
@@ -37,28 +37,16 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 flex flex-col justify-center items-center relative overflow-hidden">
-      {/* Floating blog elements in background */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        {[...Array(15)].map((_, i) => (
-          <div 
-            key={i}
-            className="absolute text-2xl opacity-20 animate-pulse"
-            style={{
-              top: `${Math.random() * 100}%`,
-              left: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 5}s`,
-              animationDuration: `${5 + Math.random() * 10}s`,
-            }}
-          >
-            {blogEmojis[i % blogEmojis.length]}
-          </div>
-        ))}
-      </div>
+      {/* Background animation has been removed */}
 
       <header className={`text-center py-8 transform transition-all duration-700 ${showTitle ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
-        <h1 className="text-5xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-purple-600">
-          Welcome to BlogSphere ✎ᝰ
-        </h1>
+        <div className="text-center pt-8 pb-2">
+          <h1 className="text-5xl font-bold">
+            <span className="text-blue-600">Blog</span>
+            <span className="text-gray-800">Sphere</span>
+            <span className="text-yellow-500 ml-1">✎ᝰ</span>
+          </h1>
+        </div>
         <p className="text-xl text-gray-700 mt-4">Express Your Thoughts and Ideas</p>
       </header>
 
@@ -74,13 +62,13 @@ const HomePage = () => {
       <div className={`mt-6 space-x-6 transition-all duration-700 ${showButtons ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
         <button
           onClick={navigateToLogin}
-          className="px-8 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition transform duration-300 focus:ring-2 focus:ring-blue-300 focus:outline-none"
+          className="px-8 py-3 text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition transform duration-300 focus:ring-2 focus:ring-blue-300 focus:outline-none"
         >
           Login 🔑
         </button>
         <button
           onClick={navigateToRegister}
-          className="px-8 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition transform duration-300 focus:ring-2 focus:ring-green-300 focus:outline-none"
+          className="px-8 py-3 text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-green-500 to-green-600 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition transform duration-300 focus:ring-2 focus:ring-green-300 focus:outline-none"
         >
           Register 📝
         </button>
@@ -97,7 +85,7 @@ const HomePage = () => {
         
         <button
           onClick={navigateToViewAllBlogs}
-          className="w-full py-4 bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition transform duration-300 focus:ring-2 focus:ring-purple-300 focus:outline-none flex justify-center items-center"
+          className="w-full py-4 text-sm sm:text-base md:text-lg lg:text-xl bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold rounded-lg hover:shadow-lg hover:scale-105 transition transform duration-300 focus:ring-2 focus:ring-purple-300 focus:outline-none flex justify-center items-center"
         >
           <span className="mr-2 text-xl">📚</span>
           Explore Recent Blogs
@@ -106,8 +94,7 @@ const HomePage = () => {
       </div>
       
       <footer className="mt-16 text-center text-gray-500 text-sm">
-        <p >Share your story with the world today!</p>
-        
+        <p>Share your story with the world today!</p>
       </footer>
     </div>
   );

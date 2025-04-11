@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://localhost:8000/accounts',  
+  baseURL: 'http://localhost:8000/accounts',
   headers: {
     'Content-Type': 'application/json',
   },
@@ -10,16 +10,20 @@ export const api = axios.create({
 export const loginUser = async (data) => {
   try {
     const response = await api.post('login/', data);
-    const { access_token } = response.data; 
-    localStorage.setItem('auth_token', access_token);  
-    return response.data;  
+    const { access_token } = response.data;
+    localStorage.setItem('auth_token', access_token);
+    return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
   }
 };
 
+export const removeAuthToken = () => {
+  localStorage.removeItem('auth_token');
+};
+
 export const getAuthToken = () => {
-  return localStorage.getItem('auth_token');  
+  return localStorage.getItem('auth_token');
 };
 
 export const registerUser = async (data) => {
@@ -49,11 +53,11 @@ export const getUserDetails = async () => {
 
     const response = await api.get('user/', {
       headers: {
-        Authorization: `Bearer ${token}`,  
+        Authorization: `Bearer ${token}`,
       },
     });
 
-    return response.data;  
+    return response.data;
   } catch (error) {
     throw error.response ? error.response.data : error.message;
   }

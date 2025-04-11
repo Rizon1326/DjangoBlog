@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getAuthToken } from "../../services/authService";
+import { getAuthToken, getUserDetails } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
 import { getBlogs, updateBlogStatus } from "../../services/blogService";
 import { formatDistanceToNow } from "date-fns";
@@ -20,7 +20,10 @@ const DraftBlogs = () => {
           return;
         }
 
-        const response = await getBlogs("draft"); // Pass 'draft' to filter drafts
+        const userDetails = getUserDetails(); // Get logged-in user details
+        const userId = userDetails.id;
+
+        const response = await getBlogs("draft", userId); // Pass userId to filter by user and draft status
         setDraftBlogs(response);
       } catch {
         setError("Error fetching drafts");

@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+from celery.schedules import crontab
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -42,6 +43,8 @@ INSTALLED_APPS = [
     'rest_framework_simplejwt',
     'rest_framework.authtoken',
      'corsheaders',
+     'django_celery_results',
+    'django_celery_beat',
 
 ]
 
@@ -144,14 +147,28 @@ REST_FRAMEWORK = {
 
 
 # Email Settings
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.mailtrap.io'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_HOST_USER = '5a939dbe12712d'
-EMAIL_HOST_PASSWORD = '25c6010e4ad6f4'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.mailtrap.io'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_HOST_USER = '5a939dbe12712d'
+# EMAIL_HOST_PASSWORD = '25c6010e4ad6f4'
 
 
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
 ]
+
+CELERY_BROKER_URL = 'redis://localhost:6379/0'
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = 'UTC'  # Use your timezone
+
+CELERY_BEAT_SCHEDULE = {
+    'clean-old-notifications-every-day': {
+        'task': 'blog.tasks.clean_old_notifications',
+        'schedule': crontab(hour=0, minute=0),  # Run at midnight
+    },
+}

@@ -1,15 +1,23 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import HomePage from './components/HomePage';
 import Navbar from './components/Navbar';
-import Login from './components/Auth/Login';
-import Register from './components/Auth/Register';
-import VerifyOTP from './components/Auth/VerifyOTP';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import VerifyOTP from './pages/VerifyOTP';
 import ViewAllBlog from './components/Blog/ViewAllBlog';
 import Dashboard from './components/Blog/Dashboard';
 import MyBlogs from './components/Blog/MyBlogs';
-import CreateBlog from './components/Blog/CreateBlog';
+// import CreateBlog from './components/Blog/CreateBlog';
+import CreateBlog from './pages/CreateBlog';
+import Edit from './pages/Edit';
 import Draft from './components/Blog/Draft';
+import Profile from './components/Auth/Profile';
+// import Edit from './components/Blog/Edit';
+// import Comment from './components/Blog/Comment';
+import About from './components/About';
+import Contact from './components/Contact';
+import PrivateRoute from './components/PrivateRoute'; // Import PrivateRoute
 
 function App() {
   return (
@@ -22,11 +30,18 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/verify" element={<VerifyOTP />} />
           <Route path="/allblog" element={<ViewAllBlog />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/my-blogs" element={<MyBlogs />} />
-          <Route path="/create-blog" element={<CreateBlog />} />
-          <Route path="/draft" element={<Draft />} />          
-          
+
+          {/* Private Routes - Wrap the protected components in PrivateRoute */}
+          <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
+          <Route path="/my-blogs" element={<PrivateRoute><MyBlogs /></PrivateRoute>} />
+          <Route path="/create-blog" element={<PrivateRoute><CreateBlog /></PrivateRoute>} />
+          <Route path="/draft" element={<PrivateRoute><Draft /></PrivateRoute>} />
+          <Route path="/profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+          <Route path="/edit-blog" element={<PrivateRoute><Edit /></PrivateRoute>} />
+          {/* <Route path="/comment/:blogId" element={<PrivateRoute><Comment /></PrivateRoute>} /> */}
+
+          <Route path="/about" element={<About />} />
+          <Route path="/contact" element={<Contact />} />
         </Routes>
       </div>
     </Router>
