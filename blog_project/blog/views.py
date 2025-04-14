@@ -11,6 +11,8 @@ from rest_framework_simplejwt.tokens import RefreshToken # type: ignore
 from django.shortcuts import get_object_or_404
 from .tasks import create_blog_notification
 from .tasks import create_comment_notification
+from .tasks import create_comment_notification
+
 
 
 from .tasks import create_blog_notification
@@ -29,19 +31,12 @@ class Register(APIView):
             username=data['username'],
             email=data['email'],
             password=data['password'],
-            # first_name=data['first_name'],
-            # last_name=data['last_name']
         )
         user.is_verified = False
        
         user.save()
         send_otp_via_email(email)
-
-         # Send OTP to email
-       
-
         return Response({"detail": "User registered successfully. Please verify your email."}, status=status.HTTP_201_CREATED)
-  
 
 class VerifyOTP(APIView):
     def post(self, request):
@@ -60,8 +55,6 @@ class VerifyOTP(APIView):
             return Response(serializer.errors, status=400)
         except Exception as e:
             return Response({'status': False, 'message': str(e)})
-        
-
 class Login(APIView):
     def post(self, request):
         serializer = LoginSerializer(data=request.data)
@@ -85,7 +78,7 @@ class Login(APIView):
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-# UserDetails
+# UserDetails T fetch the user details
 class UserDetails(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -97,48 +90,8 @@ class UserDetails(APIView):
         serializer = UserSerializer(user)
         return Response(serializer.data)
 
-# Blog List 
-class BlogList(APIView):
-    permission_classes = [AllowAny]
-    def get(self, request):
-        blogs = Blog.objects.all()
-        serializer = BlogSerializer(blogs, many=True)
-        return Response(serializer.data)
 
-# Specific User Blog
-class SpecificUserBlog(APIView):
-    permission_classes = [IsAuthenticated]  # Ensure the user is authenticated
-
-    def get(self, request):
-        # Fetch blogs created by the logged-in user
-        user = request.user
-        blogs = Blog.objects.filter(author=user)  # Filter blogs by the logged-in user
-        
-        # Serialize the blog data
-        serializer = BlogSerializer(blogs, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-# Blog Create 
-# class BlogCreate(APIView):
-#     permission_classes = [IsAuthenticated]
-
-#     def post(self, request):
-        
-#         status_value = request.data.get('status', 'draft')  
-
-#         request.data['status'] = status_value
-
-#         request.data['author'] = request.user.id  
-
-       
-#         serializer = BlogSerializer(data=request.data)
-        
-#         if serializer.is_valid():
-#             serializer.save()  
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-        
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+# Blog Related views
 class BlogCreate(APIView):
     permission_classes = [IsAuthenticated]
 
@@ -152,36 +105,38 @@ class BlogCreate(APIView):
         if serializer.is_valid():
             blog = serializer.save()
             
-            # Trigger notification task if blog is published
             if blog.status == 'post':
                 create_blog_notification.delay(blog.id)
                 
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-# blog/views.py
-from .tasks import create_comment_notification
-
-class CommentCreate(APIView):
-    permission_classes = [IsAuthenticated]
-
-    def post(self, request, pk):
+# Blog List 
+class BlogList(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request):
+        blogs = Blog.objects.all()
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data)
+# Blog Detail
+class BlogDetail(APIView):
+    permission_classes = [AllowAny]
+    def get(self, request, pk):
         blog = get_object_or_404(Blog, pk=pk)
-        data = request.data
-        data['author'] = request.user.id
-        data['blog'] = blog.id
-        data['parent_comment'] = None
+        serializer = BlogSerializer(blog)
+        return Response(serializer.data) 
+       
+# Specific User Blog
+class SpecificUserBlog(APIView):
+    permission_classes = [IsAuthenticated]  
 
-        serializer = CommentSerializer(data=data)
-        if serializer.is_valid():
-            comment = serializer.save(author=request.user)
-            
-            # Trigger notification task
-            create_comment_notification.delay(comment.id)
-            
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
+    def get(self, request):
+        user = request.user
+        blogs = Blog.objects.filter(author=user)  
+      
+        serializer = BlogSerializer(blogs, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 # Specific User Draft Blog
 class SpecificUserDraftBlog(APIView):
     permission_classes = [IsAuthenticated]
@@ -193,11 +148,11 @@ class SpecificUserDraftBlog(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 # Specific User Published Blog
 class SpecificUserPublishedBlog(APIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
 
     def get(self, request):
         user = request.user
-        blogs = Blog.objects.filter(author=user, status='post')  
+        blogs = Blog.objects.filter( status='post')  
         serializer = BlogSerializer(blogs, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
  
@@ -216,7 +171,6 @@ class BlogEdit(APIView):
             return Response(serializer.data)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
 # Blog Delete
 class BlogDelete(APIView):
     permission_classes = [IsAuthenticated]
@@ -226,44 +180,26 @@ class BlogDelete(APIView):
             return Response({'detail': 'Permission Denied'}, status=status.HTTP_403_FORBIDDEN)
         blog.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-    
-    
 
-# class CommentCreate(APIView):
-#     permission_classes = [IsAuthenticated]
 
-#     def post(self, request, pk):
-#         blog = get_object_or_404(Blog, pk=pk)
-#         data = request.data
-#         data['author'] = request.user.id
-#         data['blog'] = blog.id
-        
-#         data['parent_comment'] = None
-
-#         serializer = CommentSerializer(data=data)
-#         if serializer.is_valid():
-#             serializer.save(author=request.user)  # Save the comment with the author and blog
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    
-    # blog/views.py
-from .tasks import create_comment_notification
-
+# Comment Related views
 class CommentCreate(APIView):
     permission_classes = [IsAuthenticated]
 
     def post(self, request, pk):
         blog = get_object_or_404(Blog, pk=pk)
-        data = request.data
+        data = request.data.copy()
         data['author'] = request.user.id
         data['blog'] = blog.id
+
+        if 'parent_comment' not in data:
+            data['parent_comment'] = None
         data['parent_comment'] = None
 
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
             comment = serializer.save(author=request.user)
             
-            # Trigger notification task
             create_comment_notification.delay(comment.id)
             
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -279,19 +215,31 @@ class CommentReply(APIView):
 
     def post(self, request, pk, comment_pk):
         blog = get_object_or_404(Blog, pk=pk)
-        parent_comment = get_object_or_404(Comment, pk=comment_pk)
-        data = request.data
+        parent_comment = get_object_or_404(Comment, pk=comment_pk, blog=blog)
+        
+        data = request.data.copy()
         data['author'] = request.user.id
         data['blog'] = blog.id
         data['parent_comment'] = parent_comment.id
 
         serializer = CommentSerializer(data=data)
         if serializer.is_valid():
-            serializer.save(author=request.user)
+            comment = serializer.save(author=request.user)
+            
+            # Trigger notification for the parent comment author
+            if parent_comment.author != request.user:
+                create_comment_notification.delay(comment.id)
+            
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    def get(self, request, pk, comment_pk):
+        replies = Comment.objects.filter(parent_comment=comment_pk)
+        serializer = CommentSerializer(replies, many=True)
+        return Response(serializer.data)
 
-# blog/views.py
+# Notification Related views
+
 class NotificationList(APIView):
     permission_classes = [IsAuthenticated]
     
@@ -315,3 +263,24 @@ class NotificationMarkAllAsRead(APIView):
     def post(self, request):
         Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
         return Response({"status": "All notifications marked as read"})
+    
+
+
+# class CommentCreate(APIView):
+#     permission_classes = [IsAuthenticated]
+
+#     def post(self, request, pk):
+#         blog = get_object_or_404(Blog, pk=pk)
+#         data = request.data
+#         data['author'] = request.user.id
+#         data['blog'] = blog.id
+#         data['parent_comment'] = None
+
+#         serializer = CommentSerializer(data=data)
+#         if serializer.is_valid():
+#             comment = serializer.save(author=request.user)
+            
+#             create_comment_notification.delay(comment.id)
+            
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

@@ -22,7 +22,6 @@ const Login = () => {
       const response = await loginUser(data);
       console.log(response);
 
-      // Small delay before redirect for better UX
       setTimeout(() => {
         navigate("/dashboard");
       }, 500);

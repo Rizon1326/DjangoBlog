@@ -18,6 +18,30 @@ export const getBlogs = async () => {
   }
 };
 
+export const getUserDraftBlogs = async () => {
+  try {
+    const token = getAuthToken();
+    const response = await api.get('/user/blogs/draft/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+export const getUserPublishedBlogs = async () => {
+  try {
+   
+    const response = await api.get('/user/blogs/post/');
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
 // Fetch details for a specific blog by id
 export const getBlogDetail = async (id) => {
   try {
@@ -130,5 +154,93 @@ export const replyToComment = async (blogId, commentId, data) => {
     return response.data;  
   } catch (error) {
     throw error.response ? error.response.data : error.message;  
+  }
+};
+
+
+export const getNotifications = async () => {
+  try {
+    const token = getAuthToken();  
+    const response = await api.get('/notifications/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,  // Attach the authorization token
+      },
+    });
+    return response.data;  
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;  
+  }
+}
+
+// Mark a specific notification as read
+export const markNotificationAsRead = async (notificationId) => {
+  try {
+    const token = getAuthToken();
+    const response = await api.post(`/notifications/${notificationId}/read/`, {}, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Mark all notifications as read
+export const markAllNotificationsAsRead = async () => {
+  try {
+    const token = getAuthToken();
+    const response = await api.post('/notifications/read-all/', {}, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+// Get unread notifications count
+export const getUnreadNotificationsCount = async () => {
+  try {
+    const token = getAuthToken();
+    const response = await api.get('/notifications/', {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
+    });
+    // Filter to count only unread notifications
+    return response.data.filter(notification => !notification.is_read).length;
+  } catch (error) {
+    throw error.response ? error.response.data : error.message;
+  }
+};
+
+
+export const getBlogById = async (blogId) => {
+  try {
+    const token = getAuthToken(); // If authentication is required
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+    
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await fetch(`http://localhost:8000/blog/${blogId}/`, {
+      method: 'GET',
+      headers: headers
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch blog');
+    }
+    return await response.json();
+  } catch (error) {
+    console.error('Error fetching blog:', error);
+    throw error;
   }
 };

@@ -3,7 +3,7 @@ import { createBlog } from '../services/blogService';
 import { getUserDetails } from '../services/authService';
 import { useNavigate } from 'react-router-dom';
 import BlogForm from '../components/Blog/BlogForm';
-
+import Navbar from '../components/Navbar';
 const CreateBlog = () => {
   const [blog, setBlog] = useState({
     title: '',
@@ -36,12 +36,17 @@ const CreateBlog = () => {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
+    if (e) e.preventDefault();
     // We don't use this default submission as we have custom buttons
     // that set the status and then call submitBlog directly
   };
 
   const submitBlog = async (blogStatus) => {
+    if (!blog.title.trim() || !blog.content.trim()) {
+      setError('Title and content are required');
+      return;
+    }
+    
     try {
       const blogData = {
         title: blog.title,
@@ -72,14 +77,14 @@ const CreateBlog = () => {
         <button
           type="button"
           onClick={() => submitBlog('draft')}
-          className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600"
+          className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"
         >
-          Make as Draft
+          Save as Draft
         </button>
         <button
           type="button" 
           onClick={() => submitBlog('post')}
-          className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600"
+          className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-600"
         >
           Post
         </button>
@@ -88,6 +93,7 @@ const CreateBlog = () => {
   };
 
   return (
+    
     <BlogForm
       blogData={blog}
       onChange={handleChange}

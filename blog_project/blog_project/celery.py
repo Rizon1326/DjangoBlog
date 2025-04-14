@@ -1,4 +1,4 @@
-# blog_project/celery.py
+# blog_project/blog_project/celery.py
 import os
 from celery import Celery
 
@@ -11,5 +11,10 @@ app = Celery('blog_project')
 # Use Django settings for Celery
 app.config_from_object('django.conf:settings', namespace='CELERY')
 
-# Auto discover tasks in all registered Django apps
+# Load task modules from all registered Django app configs.
 app.autodiscover_tasks()
+
+
+@app.task(bind=True)
+def debug_task(self):
+    print(f'Request: {self.request!r}')

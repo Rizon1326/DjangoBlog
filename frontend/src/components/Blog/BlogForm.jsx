@@ -3,9 +3,9 @@ import React from 'react';
 const BlogForm = ({ 
   blogData, 
   onChange, 
+  onSubmit,
   error, 
   success,
-  onSubmit,
   isEdit = false,
   onCancel,
   renderButtons
@@ -54,7 +54,6 @@ const BlogForm = ({
           </div>
 
           <div className="flex justify-between">
-            {/* This conditional renders the cancel button if onCancel is provided */}
             {onCancel && (
               <button
                 type="button"
@@ -65,8 +64,11 @@ const BlogForm = ({
               </button>
             )}
             
-            {/* Custom buttons can be rendered here */}
-            {renderButtons ? renderButtons() : (
+            {renderButtons ? (
+              <div className="flex gap-4">
+                {renderButtons()}
+              </div>
+            ) : (
               <button
                 type="submit"
                 className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-600"

@@ -9,7 +9,7 @@ def send_otp_via_email(email):
     subject = f'Your OTP for Email Verification'
     message = f'Your OTP for Email Verification is {otp}'
     email_from = settings.EMAIL_HOST_USER
-    print(f"Sending OTP {otp} to {email}")  # Debug message to verify the email is being sent
+    print(f"Sending OTP {otp} to {email}")  
     send_mail(subject, message, email_from, [email])
     user_obj = CustomUser.objects.get(email=email)
     user_obj.otp = otp

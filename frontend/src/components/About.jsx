@@ -57,7 +57,7 @@ const About = () => {
             </div>
             <div className="bg-gray-50 p-6 rounded-lg shadow-sm hover:shadow transition-shadow">
               <h3 className="font-bold text-gray-800 mb-2">Database</h3>
-              <p className="text-gray-600">MySQL, MongoDB, PostgreSQL</p>
+              <p className="text-gray-600">MySQL, MongoDB</p>
             </div>
           </div>
         </div>

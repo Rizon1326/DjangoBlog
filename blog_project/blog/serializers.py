@@ -19,25 +19,24 @@ class LoginSerializer(serializers.Serializer):
 class BlogSerializer(serializers.ModelSerializer):
     class Meta:
         model = Blog
-        fields = ['id', 'title', 'content', 'author', 'status', 'created_at','updated_at']  # Ensure 'status' is included here
+        fields = ['id', 'title', 'content', 'author', 'status', 'created_at','updated_at']  
 
     def create(self, validated_data):
         return Blog.objects.create(**validated_data)
 class CommentSerializer(serializers.ModelSerializer):
     author = serializers.CharField(source='author.username', read_only=True)
-    replies = serializers.SerializerMethodField()  
-
+    replies = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format="%Y-%m-%d %H:%M:%S",read_only=True)
     class Meta:
         model = Comment
-        fields = ['id', 'content', 'blog', 'author', 'created_at', 'replies']
+        fields = ['id', 'content', 'blog', 'author', 'created_at', 'replies','parent_comment']
+        read_only_fields = ['author', 'created_at']
 
     def get_replies(self, obj):
-        replies = Comment.objects.filter(parent_comment=obj)
+        replies = Comment.objects.filter(parent_comment=obj).order_by('created_at')
         return CommentSerializer(replies, many=True).data
-
     def create(self, validated_data):
         return Comment.objects.create(**validated_data)
-
     
 class CommentReplySerializer(serializers.ModelSerializer):
     class Meta:

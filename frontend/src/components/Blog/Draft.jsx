@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { getAuthToken, getUserDetails } from "../../services/authService";
+import { getAuthToken } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
-import { getBlogs, updateBlogStatus } from "../../services/blogService";
+import { getUserDraftBlogs, updateBlogStatus } from "../../services/blogService";
 import { formatDistanceToNow } from "date-fns";
 
-const DraftBlogs = () => {
+const Draft = () => {
   const [draftBlogs, setDraftBlogs] = useState([]);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const blogsPerPage = 3;
   const navigate = useNavigate();
@@ -17,16 +18,18 @@ const DraftBlogs = () => {
         const token = getAuthToken();
         if (!token) {
           setError("Authentication token not found");
+          setLoading(false);
           return;
         }
 
-        const userDetails = getUserDetails(); // Get logged-in user details
-        const userId = userDetails.id;
-
-        const response = await getBlogs("draft", userId); // Pass userId to filter by user and draft status
+        // Use the new function to get draft blogs
+        const response = await getUserDraftBlogs();
         setDraftBlogs(response);
-      } catch {
-        setError("Error fetching drafts");
+        setLoading(false);
+      } catch (err) {
+        console.error("Error fetching drafts:", err);
+        setError("Error fetching drafts. Please try again.");
+        setLoading(false);
       }
     };
 
@@ -36,9 +39,10 @@ const DraftBlogs = () => {
   const indexOfLastBlog = currentPage * blogsPerPage;
   const indexOfFirstBlog = indexOfLastBlog - blogsPerPage;
   const currentBlogs = draftBlogs.slice(indexOfFirstBlog, indexOfLastBlog);
+  const totalPages = Math.ceil(draftBlogs.length / blogsPerPage);
 
   const handleNext = () => {
-    if (currentBlogs.length === blogsPerPage) {
+    if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
     }
   };
@@ -51,12 +55,26 @@ const DraftBlogs = () => {
 
   const handlePost = async (id) => {
     try {
-      await updateBlogStatus(id, "post"); // Update the blog status to 'post'
-      navigate("/my-blogs");
-    } catch {
-      setError("Error posting blog");
+      await updateBlogStatus(id, "post"); 
+      setDraftBlogs(draftBlogs.filter(blog => blog.id !== id));
+      alert("Blog published successfully!");
+    } catch (err) {
+      console.error("Error posting blog:", err);
+      setError("Error publishing blog. Please try again.");
     }
   };
+
+  const handleEdit = (id) => {
+    navigate(`/edit-blog/${id}`);
+  };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 p-6 flex justify-center items-center">
+        <div className="text-xl text-blue-600">Loading...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -90,40 +108,57 @@ const DraftBlogs = () => {
                     {formatDistanceToNow(new Date(blog.updated_at))} ago
                   </p>
                 </div>
-                <div className="flex justify-end mt-4">
+                <div className="flex justify-end mt-4 space-x-3">
+                  <button
+                    onClick={() => handleEdit(blog.id)}
+                    className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base"
+                  >
+                    Edit
+                  </button>
                   <button
                     onClick={() => handlePost(blog.id)}
                     className="bg-green-500 text-white px-6 py-2 rounded-md hover:bg-green-600 text-sm sm:text-base"
                   >
-                    Post
+                    Publish
                   </button>
                 </div>
               </div>
             ))}
           </div>
         )}
-      </div>
 
-      {currentBlogs.length > 0 && (
-        <div className="flex justify-center mt-6 gap-6">
-          <button
-            onClick={handlePrev}
-            className="bg-blue-500 text-white px-6 py-3 rounded-md hover:bg-blue-600 text-sm sm:text-base"
-            disabled={currentPage === 1}
-          >
-            Prev
-          </button>
-          <button
-            onClick={handleNext}
-            className="bg-green-500 text-white px-6 py-3 rounded-md hover:bg-green-600 text-sm sm:text-base"
-            disabled={currentBlogs.length < blogsPerPage}
-          >
-            Next
-          </button>
-        </div>
-      )}
+        {draftBlogs.length > 0 && (
+          <div className="flex justify-between mt-6">
+            <button
+              onClick={handlePrev}
+              className={`px-4 py-2 rounded-md text-sm sm:text-base ${
+                currentPage > 1
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+              disabled={currentPage === 1}
+            >
+              Prev
+            </button>
+            <span className="self-center text-gray-600">
+              Page {currentPage} of {totalPages || 1}
+            </span>
+            <button
+              onClick={handleNext}
+              className={`px-4 py-2 rounded-md text-sm sm:text-base ${
+                currentPage < totalPages
+                  ? "bg-blue-500 text-white hover:bg-blue-600"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed"
+              }`}
+              disabled={currentPage >= totalPages}
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
 
-export default DraftBlogs;
+export default Draft;

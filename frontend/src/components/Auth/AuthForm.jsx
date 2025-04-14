@@ -18,7 +18,6 @@ const AuthForm = ({
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md">
         <div className="bg-white shadow-md rounded-lg overflow-hidden">
-          {/* Logo at the top with different colors */}
           <div className="text-center pt-8 pb-2">
             <h1 className="text-3xl font-bold">
               <span className="text-blue-600">Blog</span>

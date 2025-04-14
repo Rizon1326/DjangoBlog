@@ -3,13 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import rizon from "../assets/rizon.jpeg";
 import { getUserDetails } from "../services/authService";
-import { removeAuthToken } from "../services/authService"; // Import the removeAuthToken function
+import { removeAuthToken } from "../services/authService";
 
 const Navbar = () => {
-  const [isDropdownOpen, setIsDropdownOpen] = React.useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
-  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -19,7 +18,8 @@ const Navbar = () => {
         setUsername(userData.username);
         setEmail(userData.email);
       } catch {
-        setError("Error fetching user details");
+        // Silent fail - don't set any error message
+        console.log("User not logged in or error fetching details");
       }
     };
 
@@ -27,8 +27,8 @@ const Navbar = () => {
   }, []);
 
   const handleSignOut = () => {
-    removeAuthToken(); // Remove token from localStorage
-    navigate("/"); // Redirect to homepage or login page
+    removeAuthToken();
+    navigate("/");
   };
 
   const toggleDropdown = () => {
@@ -48,8 +48,6 @@ const Navbar = () => {
             onClick={toggleDropdown}
           >
             <span className="sr-only">Open user menu</span>
-            {error && <div className="text-red-500">{error}</div>}
-
             <img
               className="w-8 h-8 rounded-full"
               src={rizon}
@@ -65,31 +63,65 @@ const Navbar = () => {
             style={{ top: "100%" }}
           >
             <div className="px-4 py-3">
-              <span className="block text-sm text-gray-900 dark:text-white">
-                {username}
-              </span>
-              <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
-                {email}
-              </span>
+              {username ? (
+                <>
+                  <span className="block text-sm text-gray-900 dark:text-white">
+                    {username}
+                  </span>
+                  <span className="block text-sm text-gray-500 truncate dark:text-gray-400">
+                    {email}
+                  </span>
+                </>
+              ) : (
+                <a 
+                  href="/" 
+                  className="block text-sm text-blue-600 hover:text-blue-800 dark:text-blue-400 dark:hover:text-blue-300"
+                >
+                  BlogSphere✎ᝰ.
+                </a>
+              )}
             </div>
             <ul className="py-2" aria-labelledby="user-menu-button">
-              <li>
-                <a
-                  href="#"
-                  onClick={handleSignOut}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Sign out
-                </a>
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
-                >
-                  Profile
-                </button>
-              </li>
+              {username ? (
+                <>
+                  <li>
+                    <a
+                      href="#"
+                      onClick={handleSignOut}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                    >
+                      Sign out
+                    </a>
+                  </li>
+                  <li>
+                    <button
+                      onClick={() => navigate("/profile")}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                    >
+                      Profile
+                    </button>
+                  </li>
+                </>
+              ) : (
+                <>
+                  <li>
+                    <a
+                      href="/login"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                    >
+                     Login
+                    </a>
+                  </li>
+                  <li>
+                    <a
+                      href="/register"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white"
+                    >
+                      Register
+                    </a>
+                  </li>
+                </>
+              )}
             </ul>
           </div>
         </div>
@@ -115,7 +147,6 @@ const Navbar = () => {
                 About
               </a>
             </li>
-            
             <li>
               <a
                 href="/contact"

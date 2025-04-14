@@ -6,16 +6,13 @@ const HomePage = () => {
   const [showTitle, setShowTitle] = useState(false);
   const [showButtons, setShowButtons] = useState(false);
   
-  // Emojis for the animation
   const blogEmojis = ["✍️", "📝", "📚", "💭", "🖋️", "📖"];
   const [currentEmojiIndex, setCurrentEmojiIndex] = useState(0);
 
   useEffect(() => {
-    // Staggered animations
     setTimeout(() => setShowTitle(true), 300);
     setTimeout(() => setShowButtons(true), 800);
     
-    // Cycle through emojis
     const emojiInterval = setInterval(() => {
       setCurrentEmojiIndex((prev) => (prev + 1) % blogEmojis.length);
     }, 2000);
@@ -37,7 +34,6 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-blue-50 to-purple-50 flex flex-col justify-center items-center relative overflow-hidden">
-      {/* Background animation has been removed */}
 
       <header className={`text-center py-8 transform transition-all duration-700 ${showTitle ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
         <div className="text-center pt-8 pb-2">

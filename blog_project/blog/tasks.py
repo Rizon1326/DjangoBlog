@@ -1,5 +1,5 @@
 # blog/tasks.py
-from celery import shared_task
+from celery import shared_task # type: ignore
 from .models import Notification, Blog, Comment, CustomUser
 from django.db.models import Q
 
@@ -30,7 +30,7 @@ def create_comment_notification(comment_id):
         blog = comment.blog
         
         # Notify blog author if they're not the commenter
-        if blog.author != comment.author:
+        if blog.author != comment.author and comment.parent_comment is None:
             Notification.objects.create(
                 user=blog.author,
                 message=f"{comment.author.username} commented on your blog: {blog.title}",
@@ -42,7 +42,7 @@ def create_comment_notification(comment_id):
         if comment.parent_comment and comment.parent_comment.author != comment.author:
             Notification.objects.create(
                 user=comment.parent_comment.author,
-                message=f"{comment.author.username} replied to your comment",
+                message=f"{comment.author.username} replied to your comment on '{blog.title}'",
                 blog=blog,
                 comment=comment
             )

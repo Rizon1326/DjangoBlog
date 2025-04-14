@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserDetails } from "../../services/authService";
+import { getUserDetails } from "../services/authService";
 import { 
   getNotifications, 
   markNotificationAsRead, 
   markAllNotificationsAsRead,
   getBlogDetail
-} from "../../services/blogService";
-import BlogDetail from "../../components/Blog/BlogDetail";
+} from "../services/blogService";
+import BlogDetail from "../components/Blog/BlogDetail";
 import { formatDistanceToNow } from 'date-fns';
 
 const Dashboard = () => {
@@ -27,7 +27,7 @@ const Dashboard = () => {
         const userData = await getUserDetails();
         setUsername(userData.username);
         setUserId(userData.id);
-      } catch (err) {
+      } catch  {
         setError("Error fetching user details");
       } finally {
         setLoading(false);
@@ -100,7 +100,6 @@ const Dashboard = () => {
         ));
       }
 
-      // Handle blog notification
       if (notification.blog) {
         try {
           const blog = await getBlogDetail(notification.blog);
@@ -108,8 +107,7 @@ const Dashboard = () => {
         } catch (err) {
           console.error("Failed to fetch blog:", err);
           setError("Couldn't load the blog. Please try again.");
-          // Fallback: Navigate to all blogs after 3 seconds
-          setTimeout(() => navigate("/allblog"), 3000);
+          setTimeout(() => navigate("/allblog"), 2000);
         }
       }
     } catch (err) {
@@ -123,7 +121,6 @@ const Dashboard = () => {
     setError("");
   };
 
-  // If viewing a blog, show BlogDetail component
   if (selectedBlog) {
     return (
       <div className="min-h-screen bg-gray-100 p-4">
@@ -163,7 +160,6 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Main Content */}
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="px-6 py-6">
@@ -190,7 +186,6 @@ const Dashboard = () => {
               </p>
             </div>
 
-            {/* Action Buttons */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
               <button
                 onClick={handleMyBlogs}
@@ -229,7 +224,6 @@ const Dashboard = () => {
               </button>
             </div>
 
-            {/* Notifications Section */}
             <div className="mt-8">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-800">Notifications</h2>
