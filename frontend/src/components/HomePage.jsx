@@ -37,21 +37,21 @@ const HomePage = () => {
 
       <header className={`text-center py-8 transform transition-all duration-700 ${showTitle ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
         <div className="text-center pt-8 pb-2">
-          <h1 className="text-5xl font-bold">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
             <span className="text-blue-600">Blog</span>
             <span className="text-gray-800">Sphere</span>
             <span className="text-yellow-500 ml-1">✎ᝰ</span>
           </h1>
         </div>
-        <p className="text-xl text-gray-700 mt-4">Express Your Thoughts and Ideas</p>
+        <p className="text-lg sm:text-xl text-gray-700 mt-4">Express Your Thoughts and Ideas</p>
       </header>
 
       <div className="flex justify-center items-center mt-8 mb-8">
-        <div className="relative h-32 w-32 flex justify-center items-center">
-          <span className="text-7xl animate-bounce absolute">
+        <div className="relative h-24 w-24 sm:h-32 sm:w-32 md:h-40 md:w-40 flex justify-center items-center">
+          <span className="text-4xl sm:text-6xl md:text-7xl animate-bounce absolute">
             {blogEmojis[currentEmojiIndex]}
           </span>
-          <div className="absolute w-24 h-24 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-20 animate-ping"></div>
+          <div className="absolute w-20 h-20 sm:w-24 sm:h-24 md:w-32 md:h-32 rounded-full bg-gradient-to-r from-blue-400 to-purple-400 opacity-20 animate-ping"></div>
         </div>
       </div>
 
@@ -89,7 +89,7 @@ const HomePage = () => {
         </button>
       </div>
       
-      <footer className="mt-16 text-center text-gray-500 text-sm">
+      <footer className="mt-16 text-center text-gray-500 text-sm sm:text-base">
         <p>Share your story with the world today!</p>
       </footer>
     </div>
