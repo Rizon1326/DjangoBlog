@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!z%7)zn$hy&k!wzfs-c(bk6kq$!=gfhk^su+up9v2#($py4ev%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["blogsphere-obc9.onrender.com","127.0.0.1","localhost"]
+ALLOWED_HOSTS = ["blogsphere-back.onrender.com","127.0.0.1","localhost"]
 
 
 # Application definition
