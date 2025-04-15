@@ -14,3 +14,14 @@ def send_otp_via_email(email):
     user_obj = CustomUser.objects.get(email=email)
     user_obj.otp = otp
     user_obj.save()
+
+def send_notification_email(user_email, subject, message):
+    """Send notification emails to users"""
+    email_from = settings.EMAIL_HOST_USER
+    send_mail(
+        subject,
+        message,
+        email_from,
+        [user_email]
+    )
+    return True

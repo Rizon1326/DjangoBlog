@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAuthToken } from './authService';
 
 const api = axios.create({
-  baseURL: 'http://localhost:8000/blog',  
+  baseURL: 'http://127.0.0.1:8000Celery/blog',  
   headers: {
     'Content-Type': 'application/json',
   },
@@ -230,7 +230,7 @@ export const getBlogById = async (blogId) => {
       headers['Authorization'] = `Bearer ${token}`;
     }
 
-    const response = await fetch(`http://localhost:8000/blog/${blogId}/`, {
+    const response = await fetch(`https://blogsphere-back.onrender.com/blog/${blogId}/`, {
       method: 'GET',
       headers: headers
     });
