@@ -11,9 +11,9 @@ User = get_user_model()
 class NotificationTests(TestCase):
     def setUp(self):
         self.user_data = {
-            'username': 'testuser',
-            'email': 'testuser@example.com',
-            'password': 'testpassword123'
+            'username': 'rizon',
+            'email': 'rizon@gmail.com',
+            'password': '1234'
         }
         self.user = User.objects.create_user(**self.user_data)
         self.user.is_verified = True

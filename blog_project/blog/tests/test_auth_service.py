@@ -11,9 +11,9 @@ User = get_user_model()
 class AuthServiceTests(TestCase):
     def setUp(self):
         self.user_data = {
-            'username': 'testuser',
-            'email': 'testuser@example.com',
-            'password': 'testpassword123'
+            'username': 'rizon',
+            'email': 'rizon@gmail.com',
+            'password': '1234'
         }
         self.user = User.objects.create_user(**self.user_data)
         self.user.is_verified = True
@@ -26,9 +26,9 @@ class AuthServiceTests(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
      
         self.second_user = User.objects.create_user(
-            username='seconduser',
-            email='seconduser@example.com',
-            password='secondpassword123'
+            username='habib',
+            email='habib@gmail.com',
+            password='1234'
         )
         self.second_user.is_verified = True
         self.second_user.save()
@@ -39,8 +39,8 @@ class AuthServiceTests(TestCase):
         url = '/accounts/register/'
         data = {
             'username': 'newuser',
-            'email': 'newuser@example.com',
-            'password': 'newpassword123'
+            'email': 'newuser@gmail.com',
+            'password': '1234'
         }
         
         with patch('blog.views.send_otp_via_email') as mock_send_otp:
@@ -59,9 +59,9 @@ class AuthServiceTests(TestCase):
         
         url = '/accounts/register/'
         data = {
-            'username': 'duplicateuser',
+            'username': 'newuser2',
             'email': self.user_data['email'], 
-            'password': 'newpassword123'
+            'password': '1234'
         }
         
         response = self.client.post(url, data, format='json')
@@ -73,8 +73,8 @@ class AuthServiceTests(TestCase):
        
         unverified_user = User.objects.create_user(
             username='unverifieduser',
-            email='unverified@example.com',
-            password='testpassword123'
+            email='unverified@gmail.com',
+            password='1234'
         )
         unverified_user.is_verified = False
         unverified_user.otp = '123456'  
@@ -82,7 +82,7 @@ class AuthServiceTests(TestCase):
         
         url = '/accounts/verify/'
         data = {
-            'email': 'unverified@example.com',
+            'email': 'unverified@gmail.com',
             'otp': '123456'
         }
         
@@ -100,8 +100,8 @@ class AuthServiceTests(TestCase):
 
         unverified_user = User.objects.create_user(
             username='invalidotpuser',
-            email='invalidotp@example.com',
-            password='testpassword123'
+            email='invalidotp@gmail.com',
+            password='1234'
         )
         unverified_user.is_verified = False
         unverified_user.otp = '123456' 
@@ -109,7 +109,7 @@ class AuthServiceTests(TestCase):
         
         url = '/accounts/verify/'
         data = {
-            'email': 'invalidotp@example.com',
+            'email': 'invalidotp@gmail.com',
             'otp': '654321'  
         }
         
@@ -138,16 +138,16 @@ class AuthServiceTests(TestCase):
         
         unverified_user = User.objects.create_user(
             username='loginunverified',
-            email='loginunverified@example.com',
-            password='testpassword123'
+            email='loginunverified@gmail.com',
+            password='1234'
         )
         unverified_user.is_verified = False
         unverified_user.save()
         
         url = '/accounts/login/'
         data = {
-            'email': 'loginunverified@example.com',
-            'password': 'testpassword123'
+            'email': 'loginunverified@gmail.com',
+            'password': '1234'
         }
         
         response = self.client.post(url, data, format='json')
@@ -160,7 +160,7 @@ class AuthServiceTests(TestCase):
         url = '/accounts/login/'
         data = {
             'email': self.user_data['email'],
-            'password': 'wrongpassword'
+            'password': '12345678'
         }
         
         response = self.client.post(url, data, format='json')

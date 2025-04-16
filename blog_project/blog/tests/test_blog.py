@@ -12,9 +12,9 @@ User = get_user_model()
 class BlogTests(TestCase):
     def setUp(self):
         self.user_data = {
-            'username': 'testuser',
-            'email': 'testuser@example.com',
-            'password': 'testpassword123'
+            'username': 'rizon',
+            'email': 'rizon@gmail.com',
+            'password': '1234'
         }
         self.user = User.objects.create_user(**self.user_data)
         self.user.is_verified = True
@@ -27,9 +27,9 @@ class BlogTests(TestCase):
         self.client.credentials(HTTP_AUTHORIZATION=f'Bearer {self.access_token}')
      
         self.second_user = User.objects.create_user(
-            username='seconduser',
-            email='seconduser@example.com',
-            password='secondpassword123'
+            username='habib',
+            email='habib@gmail.com',
+            password='1234'
         )
         self.second_user.is_verified = True
         self.second_user.save()
@@ -42,8 +42,8 @@ class BlogTests(TestCase):
         )
         
         self.second_user_blog = Blog.objects.create(
-            title='Second User Blog',
-            content='This is another test blog content.',
+            title='Habib s Blog',
+            content='This is Habib blog content.',
             author=self.second_user,
             status='post'
         )
