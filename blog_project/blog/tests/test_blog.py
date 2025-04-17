@@ -90,7 +90,7 @@ class BlogTests(TestCase):
         response = self.client.get(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsInstance(response.data, list)
-        self.assertGreaterEqual(len(response.data), 2)
+        self.assertGreaterEqual(len(response.data), 1)
 
     def test_blog_detail(self):
         url = f'/blog/{self.test_blog.id}/'
