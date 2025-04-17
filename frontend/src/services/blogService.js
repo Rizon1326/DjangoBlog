@@ -2,7 +2,7 @@ import axios from 'axios';
 import { getAuthToken } from './authService';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/blog',  
+  baseURL: 'http://0.0.0.0:8000/blog',  
   headers: {
     'Content-Type': 'application/json',
   },

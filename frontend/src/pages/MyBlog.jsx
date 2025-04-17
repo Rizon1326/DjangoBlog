@@ -63,7 +63,7 @@ const MyBlog = () => {
           return;
         }
 
-        const response = await fetch(`http://127.0.0.1:8000/blog/user/blogs/`, {
+        const response = await fetch(`http://0.0.0.0:8000/blog/user/blogs/`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -165,7 +165,7 @@ const MyBlog = () => {
         return;
       }
       
-      const response = await fetch(`http://127.0.0.1:8000/blog/${fullBlog.id}/edit/`, {
+      const response = await fetch(`http://0.0.0.0:8000/blog/${fullBlog.id}/edit/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
