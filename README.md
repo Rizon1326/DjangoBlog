@@ -73,7 +73,7 @@ Apply the migrations to set up the database:
 python manage.py migrate
 ```
 
-#### Step 5: Create a Superuser (Optional)
+#### Step 5: Create a Superuser 
 
 To access the Django admin, create a superuser:
 
@@ -158,7 +158,7 @@ python manage.py test blog.test.test_notifications
 
 ---
 
-### 6. Docker Setup (Optional) 🐳
+### 6. Docker Setup 🐳
 
 You can use Docker to run both the backend and frontend along with Redis. Follow these steps:
 
@@ -179,7 +179,7 @@ Once the containers are up, you can access the following:
 
 ---
 
-### 7. Docker Commands ⚙️
+### 7. Docker Commands 🐳
 
 To stop the Docker containers:
 
