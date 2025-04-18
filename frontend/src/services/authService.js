@@ -1,7 +1,8 @@
 import axios from 'axios';
-
+// https://blogsphere-back.onrender.com
+// http://localhost:8000
 export const api = axios.create({
-  baseURL: 'http://localhost:8000/accounts',
+  baseURL: 'https://blogsphere-back.onrender.com/accounts',
   headers: {
     'Content-Type': 'application/json',
   },

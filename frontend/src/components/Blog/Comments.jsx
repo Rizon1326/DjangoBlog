@@ -18,7 +18,7 @@ const Comments = ({ blogId }) => {
   const fetchAllComments = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://localhost:8000/blog/${blogId}/comments/`);
+      const response = await fetch(`https://blogsphere-back.onrender.com/blog/${blogId}/comments/`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch comments');
@@ -75,7 +75,7 @@ const Comments = ({ blogId }) => {
     }
     
     try {
-      const response = await fetch(`http://localhost:8000/blog/${blogId}/comments/make/`, {
+      const response = await fetch(`https://blogsphere-back.onrender.com/blog/${blogId}/comments/make/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ const Comments = ({ blogId }) => {
     }
     
     try {
-      const response = await fetch(`http://localhost:8000/blog/${blogId}/comments/${commentId}/reply/`, {
+      const response = await fetch(`https://blogsphere-back.onrender.com/blog/${blogId}/comments/${commentId}/reply/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

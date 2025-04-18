@@ -63,7 +63,7 @@ const MyBlog = () => {
           return;
         }
 
-        const response = await fetch(`http://localhost:8000/blog/user/blogs/`, {
+        const response = await fetch(`https://blogsphere-back.onrender.com/blog/user/blogs/`, {
           method: 'GET',
           headers: {
             Authorization: `Bearer ${token}`,
@@ -165,7 +165,7 @@ const MyBlog = () => {
         return;
       }
       
-      const response = await fetch(`http://localhost:8000/blog/${fullBlog.id}/edit/`, {
+      const response = await fetch(`https://blogsphere-back.onrender.com/blog/${fullBlog.id}/edit/`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
