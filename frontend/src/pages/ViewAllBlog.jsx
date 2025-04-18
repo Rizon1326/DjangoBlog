@@ -1,3 +1,4 @@
+// frontend/src/pages/ViewAllBlog.jsx
 import React, { useEffect, useState } from 'react';
 import { getBlogs } from '../services/blogService'; 
 import { getAuthToken, getUserDetails } from '../services/authService';

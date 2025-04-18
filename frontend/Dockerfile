@@ -1,18 +1,23 @@
-# Use official Node.js image from the Docker Hub
-FROM node:16
-
-# Set the working directory
+# Build stage
+FROM node:18 as build
+# Set working directory
 WORKDIR /app
-
+# Copy package files
+COPY package.json package-lock.json ./
 # Install dependencies
-COPY package.json package-lock.json /app/
-RUN npm install
+RUN npm ci
+# Copy all frontend files
+COPY . .
+# Build the application
+RUN npm run build
 
-# Copy the React app
-COPY . /app/
-
-# Expose the port Vite will run on
-EXPOSE 5173
-
-# Run the Vite development server
-CMD ["npm", "run", "dev"]
+# Production stage
+FROM nginx:alpine
+# Copy built files from build stage to nginx
+COPY --from=build /app/dist /usr/share/nginx/html
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Expose port
+EXPOSE 80
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]

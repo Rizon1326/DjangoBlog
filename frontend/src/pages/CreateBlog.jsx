@@ -1,3 +1,4 @@
+// frontend/src/pages/CreateBlog.jsx
 import React, { useState, useEffect } from 'react';
 import { createBlog } from '../services/blogService';
 import { getUserDetails } from '../services/authService';
@@ -66,7 +67,8 @@ const CreateBlog = () => {
         }
       }, 1500);
     } catch {
-      setError('Error creating blog');
+      // setError('Error creating blog');
+      navigate('/my-blogs');
     }
   };
 

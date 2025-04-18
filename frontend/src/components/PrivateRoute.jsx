@@ -1,3 +1,4 @@
+// frontend/src/components/PrivateRoute.jsx
 import React from 'react';
 import { Navigate } from 'react-router-dom';
 import { getAuthToken } from '../services/authService';

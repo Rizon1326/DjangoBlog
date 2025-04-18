@@ -1,7 +1,8 @@
+// frontend/src/services/authService.js
 import axios from 'axios';
 
 export const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/accounts',
+  baseURL: 'http://0.0.0.0:8000/accounts',
   headers: {
     'Content-Type': 'application/json',
   },

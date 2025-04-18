@@ -1,8 +1,9 @@
+// frontend/src/services/blogService.js
 import axios from 'axios';
 import { getAuthToken } from './authService';
 
 const api = axios.create({
-  baseURL: 'http://127.0.0.1:8000/blog',  
+  baseURL: 'http://0.0.0.0:8000/blog',  
   headers: {
     'Content-Type': 'application/json',
   },
@@ -56,7 +57,7 @@ export const getBlogDetail = async (id) => {
 export const createBlog = async (data) => {
   try {
     const token = getAuthToken();  
-    const response = await api.post('create/', data, {
+    const response = await api.post('/create/', data, {
       headers: {
         'Authorization': `Bearer ${token}`,  // Attach the authorization token
       },

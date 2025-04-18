@@ -18,7 +18,7 @@ const Comments = ({ blogId }) => {
   const fetchAllComments = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`http://127.0.0.1:8000/blog/${blogId}/comments/`);
+      const response = await fetch(`http://0.0.0.0:8000/blog/${blogId}/comments/`);
       
       if (!response.ok) {
         throw new Error('Failed to fetch comments');
@@ -75,7 +75,7 @@ const Comments = ({ blogId }) => {
     }
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/blog/${blogId}/comments/make/`, {
+      const response = await fetch(`http://0.0.0.0:8000/blog/${blogId}/comments/make/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ const Comments = ({ blogId }) => {
     }
     
     try {
-      const response = await fetch(`http://127.0.0.1:8000/blog/${blogId}/comments/${commentId}/reply/`, {
+      const response = await fetch(`http://0.0.0.0:8000/blog/${blogId}/comments/${commentId}/reply/`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

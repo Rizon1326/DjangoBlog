@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-!z%7)zn$hy&k!wzfs-c(bk6kq$!=gfhk^su+up9v2#($py4ev%
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["blogsphere-back.onrender.com","127.0.0.1","localhost"]
+ALLOWED_HOSTS = ["blogsphere-back.onrender.com","127.0.0.1","localhost","0.0.0.0"]
 
 
 # Application definition
@@ -84,12 +84,24 @@ WSGI_APPLICATION = 'blog_project.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'PASSWORD': 'postgres',
+        'HOST': 'db',  # This will be the service name in docker-compose
+        'PORT': '5432',
     }
 }
+
 
 
 # Password validation
@@ -163,8 +175,8 @@ EMAIL_HOST_PASSWORD = '25c6010e4ad6f4'
 # ]
 CORS_ORIGIN_ALLOW_ALL = True
 
-CELERY_BROKER_URL = 'redis://localhost:6379/0'
-CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+CELERY_BROKER_URL = 'redis://redis:6379/0'
+CELERY_RESULT_BACKEND = 'redis://redis:6379/0'
 CELERY_ACCEPT_CONTENT = ['json']
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'

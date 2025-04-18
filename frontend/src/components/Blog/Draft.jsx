@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { getAuthToken } from "../../services/authService";
 import { useNavigate } from "react-router-dom";
-import { getUserDraftBlogs, updateBlogStatus } from "../../services/blogService";
+import {
+  getUserDraftBlogs,
+  updateBlogStatus,
+} from "../../services/blogService";
 import { formatDistanceToNow } from "date-fns";
 
 const Draft = () => {
@@ -55,8 +58,8 @@ const Draft = () => {
 
   const handlePost = async (id) => {
     try {
-      await updateBlogStatus(id, "post"); 
-      setDraftBlogs(draftBlogs.filter(blog => blog.id !== id));
+      await updateBlogStatus(id, "post");
+      setDraftBlogs(draftBlogs.filter((blog) => blog.id !== id));
       alert("Blog published successfully!");
     } catch (err) {
       console.error("Error posting blog:", err);
@@ -109,11 +112,34 @@ const Draft = () => {
                   </p>
                 </div>
                 <div className="flex justify-end mt-4 space-x-3">
-                  <button
+                  {/* <button
                     onClick={() => handleEdit(blog.id)}
                     className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base"
                   >
                     Edit
+                  </button> */}
+
+                  <button
+                    onClick={() => navigate("/dashboard")}
+                    className="bg-blue-500 text-white px-6 py-2 rounded-md hover:bg-blue-600 text-sm sm:text-base"
+                  >
+                    <span className="flex items-center justify-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-4 w-4 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M10 19l-7-7m0 0l7-7m-7 7h18"
+                        />
+                      </svg>
+                      Back to Dashboard 
+                    </span>
                   </button>
                   <button
                     onClick={() => handlePost(blog.id)}

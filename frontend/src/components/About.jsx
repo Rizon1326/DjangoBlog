@@ -1,3 +1,4 @@
+// frontend/src/components/About.jsx
 import React from 'react';
 import rizon from "../assets/rizon.jpeg";
 

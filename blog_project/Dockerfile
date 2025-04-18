@@ -1,22 +1,27 @@
-# Use official Python image from the Docker Hub
-FROM python:3.9-slim
+FROM python:3.10-slim
 
-# Set environment variables
-ENV PYTHONUNBUFFERED 1
-
-# Set the working directory
 WORKDIR /app
 
-# Install dependencies
-COPY requirements.txt /app/
-RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+# Prevent Python from writing bytecode files
+ENV PYTHONDONTWRITEBYTECODE=1
+# Ensure Python output is sent straight to terminal
+ENV PYTHONUNBUFFERED=1
 
-# Copy the Django app
-COPY . /app/
+# Install system dependencies including PostgreSQL client and dev libraries
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    libpq-dev \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
-# Expose the port Django will run on
+# Install Python dependencies
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir psycopg2-binary
+
+# Copy project
+COPY . .
+
 EXPOSE 8000
 
-# Run the Django server
 CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]

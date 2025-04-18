@@ -1,3 +1,4 @@
+// frontend/src/pages/Edit.jsx
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { getBlogDetail, editBlog } from '../services/blogService';

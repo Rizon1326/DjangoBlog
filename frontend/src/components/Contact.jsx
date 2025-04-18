@@ -1,3 +1,4 @@
+// frontend/src/components/Contact.jsx
 import React from "react";
 import { Mail, User, Phone, Home, ArrowRight } from "lucide-react";
 
