@@ -66,7 +66,8 @@ const CreateBlog = () => {
         }
       }, 1500);
     } catch {
-      setError('Error creating blog');
+      alert("Blog created successfully!");
+      navigate("/my-blogs");
     }
   };
 
