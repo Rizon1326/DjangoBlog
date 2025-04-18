@@ -66,9 +66,12 @@ const CreateBlog = () => {
         }
       }, 1500);
     } catch {
-      alert("Blog created successfully!");
-      navigate("/my-blogs");
-    }
+      setSuccess("Blog created successfully!");
+  
+       setTimeout(() => {
+        navigate("/my-blogs");
+      }, 1500);
+     }
   };
 
   // Custom buttons for create form
